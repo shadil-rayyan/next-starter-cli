@@ -1,14 +1,37 @@
 {
-  "name": "nextjs-setup-cli",
-  "version": "1.0.0",
-  "description": "A CLI tool for setting up a Next.js project with various features.",
+  "name": "nextjs-starter-cli",
+  "version": "1.0.8",
+  "description": "A CLI tool to start Next.js projects with custom configurations",
   "main": "index.mjs",
   "bin": {
-    "create-nextjs-project": "./index.mjs"
+    "nextjs-starter": "bin/index.mjs"
+  },
+  "scripts": {
+    "start": "node index.mjs"
   },
   "dependencies": {
-    "inquirer": "^8.2.0",
-    "chalk": "^4.1.0"
+    "chalk": "^4.1.2",
+    "inquirer": "^8.2.0"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "eslint": "^7.32.0",
+    "eslint-config-next": "^11.1.2",
+    "husky": "^7.0.2",
+    "lint-staged": "^11.1.2",
+    "@commitlint/config-conventional": "^12.1.4",
+    "@commitlint/cli": "^12.1.4",
+    "@sentry/nextjs": "^6.13.3",
+    "codecov": "^3.8.3",
+    "next-auth": "^3.28.0",
+    "firebase": "^9.1.2",
+    "clerk-sdk": "^1.0.0",
+    "next-pwa": "^5.2.23",
+    "next-sitemap": "^1.6.170",
+    "prisma": "^3.1.1",
+    "drizzle": "^1.0.0",
+    "vercel": "^23.0.1",
+    "netlify": "^6.0.0"
+  },
+  "author": "SHADIL A M",
+  "license": "ISC"
 }

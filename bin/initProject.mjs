@@ -4,9 +4,11 @@ import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 import { execSync } from 'child_process';
+import inquirer from 'inquirer';
+import { questions } from './questions.mjs';
 import { createCustomFolderStructure } from './createCustomFolderStructure.mjs';
 
-export async function initProject(answers) {
+export async function initProject() {
     const answers = await inquirer.prompt(questions);
   
     let projectPath = process.cwd();
@@ -34,7 +36,7 @@ export async function initProject(answers) {
     ],
     theme: {
       extend: {},
-    },
+    ],
     plugins: [],
   }
       `);
@@ -157,6 +159,7 @@ export async function initProject(answers) {
       } else if (answers.useAuth === 'clerk') {
         execSync('npm install clerk-sdk', { stdio: 'inherit' });
       } 
+    }
   
     if (answers.usePwa) {
       execSync('npm install next-pwa', { stdio: 'inherit' });
@@ -275,5 +278,4 @@ export async function initProject(answers) {
   - Optional database tools
   - Deployment setup for Vercel or Netlify
     `);
-  }
 }

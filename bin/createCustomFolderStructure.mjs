@@ -1,5 +1,6 @@
 import fs from 'fs';
 import chalk from 'chalk';
+import { initProject } from './initProject.mjs';
 
 export function createCustomFolderStructure(useAppRouter) {
     console.log(chalk.blue('\nCreating custom folder structure...'));
