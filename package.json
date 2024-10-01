@@ -1,0 +1,14 @@
+{
+  "name": "nextjs-setup-cli",
+  "version": "1.0.0",
+  "description": "A CLI tool for setting up a Next.js project with various features.",
+  "main": "index.mjs",
+  "bin": {
+    "create-nextjs-project": "./index.mjs"
+  },
+  "dependencies": {
+    "inquirer": "^8.2.0",
+    "chalk": "^4.1.0"
+  },
+  "devDependencies": {}
+}
