@@ -1,0 +1,76 @@
+import { execSync } from 'child_process';
+import fs from 'fs';
+import path from 'path';
+
+export function setupI18n() {
+  console.log('Setting up next-i18next for internationalization...');
+
+  // Install the necessary packages
+  execSync('npm install next-i18next react-i18next', { stdio: 'inherit' });
+
+  // Create next-i18next.config.js
+  const i18nConfig = `
+const path = require('path');
+
+module.exports = {
+  i18n: {
+    defaultLocale: 'en',
+    locales: ['en', 'fr', 'es'], // Add your supported languages here
+  },
+  localePath: path.resolve('./public/locales'), // Path to your translation files
+};
+  `;
+  fs.writeFileSync('next-i18next.config.js', i18nConfig.trim());
+
+  // Update next.config.js to include i18n
+  const nextConfigPath = 'next.config.js';
+
+  if (fs.existsSync(nextConfigPath)) {
+    // Read the existing next.config.js content
+    const existingConfig = fs.readFileSync(nextConfigPath, 'utf8');
+
+    // Create updated config
+    const updatedConfig = `
+const { i18n } = require('./next-i18next.config');
+
+module.exports = {
+  ...require('./next-i18next.config'),
+  ...${existingConfig}
+};
+    `;
+
+    fs.writeFileSync(nextConfigPath, updatedConfig.trim());
+  } else {
+    // Create next.config.js if it doesn't exist
+    const initialNextConfig = `
+const { i18n } = require('./next-i18next.config');
+
+module.exports = {
+  i18n,
+};
+    `;
+    fs.writeFileSync(nextConfigPath, initialNextConfig.trim());
+  }
+
+  // Create the locales folder structure
+  const localesDir = path.resolve('./public/locales');
+  fs.mkdirSync(localesDir, { recursive: true });
+
+  // Create example translation files
+  const exampleTranslations = {
+    en: { welcome: 'Welcome to our website!', description: 'This is a sample application using next-i18next.' },
+    fr: { welcome: 'Bienvenue sur notre site Web!', description: 'Ceci est une application d\'exemple utilisant next-i18next.' },
+    es: { welcome: '¡Bienvenido a nuestro sitio web!', description: 'Esta es una aplicación de muestra que utiliza next-i18next.' },
+  };
+
+  for (const [lang, translations] of Object.entries(exampleTranslations)) {
+    const langDir = path.join(localesDir, lang);
+    fs.mkdirSync(langDir, { recursive: true });
+    fs.writeFileSync(
+      path.join(langDir, 'common.json'),
+      JSON.stringify(translations, null, 2)
+    );
+  }
+
+  console.log('next-i18next setup completed.');
+}

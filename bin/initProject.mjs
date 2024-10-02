@@ -7,6 +7,20 @@ import { execSync } from 'child_process';
 import inquirer from 'inquirer';
 import { questions } from './questions.mjs';
 import { createCustomFolderStructure } from './createCustomFolderStructure.mjs';
+import { setupTailwind } from './file/setupTailwind.mjs';
+import { setupTypescript } from './file/setupTypescript.mjs';
+import { setupESLint } from './file/setupESLint.mjs';
+import { setupHusky } from './file/setupHusky.mjs';
+import { setupCommitLint } from './file/setupCommitLint.mjs';
+import { setupSentry } from './file/setupSentry.mjs';
+import { setupCodeCov } from './file/setupCodeCov.mjs';
+import { setupAuth } from './file/setupAuth.mjs';
+import { setupPwa } from './file/setupPwa.mjs';
+import { setupSitemap } from './file/setupSitemap.mjs';
+import { setupDatabase } from './file/setupDatabase.mjs';
+import { setupDeployment } from './file/setupDeployment.mjs';
+import { setupUnitTesting } from './file/setupUnitTesting.mjs';
+import { setupE2ETesting } from './file/setupE2ETesting.mjs';
 
 export async function initProject() {
     const answers = await inquirer.prompt(questions);
@@ -26,162 +40,60 @@ export async function initProject() {
     createCustomFolderStructure(answers.approuter);
   
     if (answers.useTailwindCss) {
-      execSync('npm install tailwindcss postcss autoprefixer', { stdio: 'inherit' });
-      fs.writeFileSync('tailwind.config.js', `
-  /** @type {import('tailwindcss').Config} */
-  module.exports = {
-    content: [
-      "./pages/**/*.{js,ts,jsx,tsx}",
-      "./components/**/*.{js,ts,jsx,tsx}",
-    ],
-    theme: {
-      extend: {},
-    ],
-    plugins: [],
-  }
-      `);
+      setupTailwind();
     }
   
     if (answers.useTypescript) {
-      execSync('npm install typescript @types/react @types/node', { stdio: 'inherit' });
-      fs.writeFileSync('tsconfig.json', `
-  {
-    "compilerOptions": {
-      "target": "es5",
-      "lib": ["dom", "dom.iterable", "esnext"],
-      "allowJs": true,
-      "skipLibCheck": true,
-      "strict": true,
-      "forceConsistentCasingInFileNames": true,
-      "noEmit": true,
-      "esModuleInterop": true,
-      "module": "esnext",
-      "moduleResolution": "node",
-      "resolveJsonModule": true,
-      "isolatedModules": true,
-      "jsx": "preserve"
-    },
-    "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
-    "exclude": ["node_modules"]
-  }
-      `);
+      setupTypescript();
     }
   
     if (answers.testing !== 'none') {
-      console.log(chalk.blue(`\nInstalling ${answers.testing}...`));
-      execSync(`npm install ${answers.testing} --save-dev`, { stdio: 'inherit' });
+      setupE2ETesting(answers.testing);
     }
   
+    // Setup the selected unit testing tool
     if (answers.unitTestingTool !== 'none') {
-      console.log(chalk.blue(`\nInstalling ${answers.unitTestingTool}...`));
-      if (answers.unitTestingTool === 'jest') {
-        execSync('npm install jest @testing-library/react @testing-library/jest-dom', { stdio: 'inherit' });
-        fs.writeFileSync('jest.config.js', `
-  module.exports = {
-    testEnvironment: "jsdom",
-    setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
-    moduleFileExtensions: ["js", "jsx", "ts", "tsx"],
-    testPathIgnorePatterns: ["/node_modules/", "/.next/"],
-    collectCoverageFrom: [
-      "pages/**/*.{js,jsx,ts,tsx}",
-      "components/**/*.{js,jsx,ts,tsx}",
-      "!**/node_modules/**",
-    ],
-  };
-        `);
-        fs.writeFileSync('jest.setup.js', `
-  import "@testing-library/jest-dom";
-        `);
-      } else if (answers.unitTestingTool === 'mocha') {
-        execSync('npm install mocha --save-dev', { stdio: 'inherit' });
-      }
+      setupUnitTesting(answers.unitTestingTool);
     }
   
     if (answers.useESLint) {
-      execSync('npm install eslint eslint-config-next', { stdio: 'inherit' });
-      fs.writeFileSync('.eslintrc.json', JSON.stringify({
-        "extends": "next/core-web-vitals",
-        "rules": {}
-      }, null, 2));
+      setupESLint();
     }
   
     if (answers.useHusky) {
-      execSync('npm install husky lint-staged', { stdio: 'inherit' });
-      fs.writeFileSync('.huskyrc', JSON.stringify({
-        "hooks": {
-          "pre-commit": "npm run lint",
-          "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
-        }
-      }, null, 2));
+      setupHusky();
     }
   
     if (answers.useCommitLint) {
-      execSync('npm install @commitlint/config-conventional @commitlint/cli --save-dev', { stdio: 'inherit' });
-      fs.writeFileSync('commitlint.config.js', `
-  module.exports = {
-    extends: ['@commitlint/config-conventional'],
-    rules: {}
-  };
-      `);
+      setupCommitLint();
     }
   
     if (answers.useSentry) {
-      execSync('npm install @sentry/nextjs', { stdio: 'inherit' });
+      setupSentry();
     }
   
     if (answers.useCodeCov) {
-      execSync('npm install codecov --save-dev', { stdio: 'inherit' });
+      setupCodeCov();
     }
   
     if (answers.useAuth !== 'none') {
-      if (answers.useAuth === 'nextauth') { 
-        execSync('npm install next-auth', { stdio: 'inherit' });
-      } else if (answers.useAuth === 'firebase') {
-        execSync('npm install firebase', { stdio: 'inherit' });
-        fs.writeFileSync('firebase.js', `
-          import { initializeApp } from 'firebase/app';
-  import { getAuth } from 'firebase/auth';
-  
-  const firebaseConfig = {
-    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-    appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-  };
-  
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  
-  export { auth };
-        `);
-      } else if (answers.useAuth === 'clerk') {
-        execSync('npm install clerk-sdk', { stdio: 'inherit' });
-      } 
+      setupAuth(answers.useAuth);
     }
   
     if (answers.usePwa) {
-      execSync('npm install next-pwa', { stdio: 'inherit' });
+      setupPwa();
     }
   
     if (answers.useSitemap) {
-      execSync('npm install next-sitemap', { stdio: 'inherit' });
-      fs.writeFileSync('next.config.js', `
-        module.exports = {
-    siteUrl: process.env.SITE_URL || 'https://example.com',
-    generateRobotsTxt: true, // (optional)
-  };
-  `);
+      setupSitemap();
     }
   
     if (answers.databaseTool !== 'None') {
-      execSync(`npm install ${answers.databaseTool}`, { stdio: 'inherit' });
+      setupDatabase(answers.databaseTool);
     }
   
     if (answers.deploymentPlatform !== 'None') {
-      console.log(chalk.blue(`\nSetting up deployment for ${answers.deploymentPlatform}...`));
-      execSync(`npm install ${answers.deploymentPlatform}`, { stdio: 'inherit' });
+      setupDeployment(answers.deploymentPlatform);
     }
   
     // Create .gitignore
