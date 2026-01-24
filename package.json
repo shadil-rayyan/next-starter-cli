@@ -1,6 +1,6 @@
 {
   "name": "nextjs-starter-cli",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "A CLI tool to start Next.js projects with custom configurations",
   "main": "bin/index.mjs",
   "bin": {
