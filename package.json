@@ -1,14 +1,20 @@
 {
   "name": "nextjs-starter-cli",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "A CLI tool to start Next.js projects with custom configurations",
   "main": "bin/index.mjs",
   "bin": {
-    "nextjs-starter": "bin/index.mjs"
+    "nextjs-starter": "bin/index.mjs",
+    "nextjs-starter-cli": "bin/index.mjs"
   },
   "scripts": {
     "start": "node bin/index.mjs"
   },
+  "files": [
+    "bin",
+    "README.md",
+    "package.json"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/shadil-rayyan/nextjs-starter-cli"
